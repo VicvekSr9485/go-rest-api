@@ -4,6 +4,7 @@ import (
 	"diary-api/database"
 	"diary-api/model"
 	"diary-api/controller"
+	"diary-api/middleware"
 	"github.com/joho/godotenv"
 	"github.com/gin-gonic/gin"
     "log"
@@ -36,6 +37,11 @@ func serveApplication() {
     publicRoutes := router.Group("/auth")
     publicRoutes.POST("/register", controller.Register)
     publicRoutes.POST("/login", controller.Login)
+
+	protectedRoutes := router.Group("/api")
+	protectedRoutes.Use(middleware.JWTAuthMiddleware())
+	protectedRoutes.POST("/entry", controller.AllEntry)
+	protectedRoutes.GET("/entry", controller.GetAllEntries)
 
     router.Run(":8000")
     fmt.Println("Server running on port 8000")
